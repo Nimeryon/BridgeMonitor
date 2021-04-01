@@ -1,6 +1,4 @@
-﻿@using Microsoft.AspNetCore.Routing.Tree
-@using System.Globalization
-@model List<BoatModel>
+﻿@model List<BoatModel>
 @{
     ViewData["Title"] = "Prochaine Fermeture";
 
@@ -26,7 +24,7 @@
     string GetTimeSpan(TimeSpan timeSpan)
     {
         return string.Format(
-            "{0} ,{1} {2} et {3}", 
+            "{0} ,{1} {2} et {3}",
             Pluriel(timeSpan.Days, "jour"),
             Pluriel(timeSpan.Hours, "heure"),
             Pluriel(timeSpan.Minutes, "minute"),
@@ -40,10 +38,11 @@
     }
 }
 
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script>
     function getTimeCLose() {
         var date = new Date(toLocalDate("@boat.ClosingDate"));
-        console.log(date);
         var d = getTime(date - Date.now());
         return pluriel(d.days, "jour") +
             " ," +
@@ -96,8 +95,23 @@
 
 <div class="container-md shadow m-3">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h3>@boat.BoatName</h3>
+            @if ((boat.ClosingDate.Hour >= 7 && boat.ClosingDate.Hour <= 9) || (boat.ClosingDate.Hour >= 17 && boat.ClosingDate.Hour <= 19))
+            {
+                <div class="mr-3" id="infoBulle" data-toggle="tooltip" data-placement="top" title="Risque d'embouteillage durant la période de fermeture.">
+                    <span>Risque d'embouteillage :</span>
+
+                    <i class="fas fa-exclamation-triangle" style="color:red"></i>
+                </div>
+            }
+            else
+            {
+                <div class="mr-3" id="infoBulle" data-toggle="tooltip" data-placement="top" title="Aucun risque d'embouteillage prévu.">
+                    <span>Risque d'embouteillage :</span>
+                    <i class="fas fa-check-circle" style="color:green"></i>
+                </div>
+            }
         </div>
         <div class="card-body">
             <div class="d-flex justify-content-around">
@@ -139,3 +153,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $('#infoBulle').tooltip()
+    })
+</script>
