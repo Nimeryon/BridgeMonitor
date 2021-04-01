@@ -1,5 +1,6 @@
 ﻿@{
-    ViewData["Title"] = "Prochaine Fermeture";
+    bool detail = ViewData["Detail"] != null;
+    ViewData["Title"] = detail ? "Détail" : "Prochaine Fermeture";
 
     BoatModel boat = ViewData["Boat"] as BoatModel;
 
@@ -26,8 +27,6 @@
     }
 }
 
-<script src='https://kit.fontawesome.com/a076d05399.js'></script>
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script>
     function getTimeCLose() {
         var date = new Date(toLocalDate("@boat.ClosingDate"));
@@ -81,6 +80,7 @@
     }
 </script>
 
+<h4 class="m-3">@(detail ? "Détail" : "Prochaine fermeture")</h4>
 <div class="container-md shadow m-3">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">

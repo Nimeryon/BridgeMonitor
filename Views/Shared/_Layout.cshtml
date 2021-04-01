@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -16,12 +18,16 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="All">Toute les fermetures</a>
                         </li>
                     </ul>
+                    @using (Html.BeginForm("DownloadCalendar", "Home"))
+                    {
+                        <button class="btn btn-primary">Calendrier<i class="fas fa-download ml-3"></i></button>
+                    }
                 </div>
             </div>
         </nav>

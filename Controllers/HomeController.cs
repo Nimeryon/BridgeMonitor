@@ -55,13 +55,19 @@ namespace BridgeMonitor.Controllers
             oldBoats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
 
             ViewData["Boat"] = infos[0] == "n" ? boats[int.Parse(infos[1])] : oldBoats[int.Parse(infos[1])];
+            ViewData["Detail"] = true;
             return View("Index");
         }
 
         public IActionResult All()
         {
-            List<BoatModel> boats = GetBoats();
-            return View(boats);
+            ViewData["Boats"] = GetBoats();
+            return View();
+        }
+
+        public IActionResult DownloadCalendar()
+        {
+            return Ok();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -69,8 +75,6 @@ namespace BridgeMonitor.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-
 
         public static List<BoatModel> GetBoats()
         {

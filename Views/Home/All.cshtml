@@ -1,8 +1,7 @@
-﻿@model List<BoatModel>
-@{
+﻿@{
     ViewData["Title"] = "Toutes les Fermetures";
 
-    List<BoatModel> boats = Model;
+    List<BoatModel> boats = ViewData["Boats"] as List<BoatModel>;
     List<BoatModel> oldBoats = new List<BoatModel>();
     for (int i = 0; i < boats.Count; i++)
     {
@@ -66,7 +65,6 @@
     </table>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <h4 class="m-3">Ancienne fermeture</h4>
 <div class="container-md shadow m-3">
     <table class="table">
