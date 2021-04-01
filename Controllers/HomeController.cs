@@ -22,9 +22,17 @@ namespace BridgeMonitor.Controllers
 
         public IActionResult Index()
         {
-            List<BoatModel> boats = GetBoats();
-            return View(boats);
+            ViewData["Boats"] = GetBoats();
+            ViewData["Boat"] = null;
+            return View();
         }
+
+        /*public IActionResult Index(BoatModel boat)
+        {
+            ViewData["Boats"] = GetBoats();
+            ViewData["Boat"] = boat;
+            return View();
+        }*/
 
         public IActionResult All()
         {

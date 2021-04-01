@@ -3,17 +3,98 @@
     ViewData["Title"] = "Toutes les Fermetures";
 
     List<BoatModel> boats = Model;
+    List<BoatModel> oldBoats = new List<BoatModel>();
+    for (int i = 0; i < boats.Count; i++)
+    {
+        if (boats[i].ClosingDate.CompareTo(DateTime.Now) < 0)
+        {
+            oldBoats.Add(boats[i]);
+            boats.RemoveAt(i);
+        }
+    }
+    foreach (BoatModel boat in boats)
+    {
+        
+    }
+    // Sort
     boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+    oldBoats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+
+
+
+
+    string GetTime(BoatModel boat)
+    {
+        TimeSpan timeSpan = boat.ReopeningDate.Subtract(boat.ClosingDate);
+        return string.Format(
+            "{0} ,{1} {2} et {3}",
+            Pluriel(timeSpan.Days, "jour"),
+            Pluriel(timeSpan.Hours, "heure"),
+            Pluriel(timeSpan.Minutes, "minute"),
+            Pluriel(timeSpan.Seconds, "seconde")
+        );
+    }
+
+    string Pluriel(int amount, string mot)
+    {
+        return string.Format("{0} {1}{2}", amount, mot, amount > 1 ? "s" : "");
+    }
 }
 
+<h4 class="m-3">Prochaine fermeture</h4>
 <div class="container-md shadow m-3">
-    <ul class="list-group">
-        @foreach (var boat in boats)
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Date de fermeture</th>
+                <th scope="col">Heure de fermeture</th>
+                <th scope="col">Durée de fermeture</th>
+                <th scope="col">Détail</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var boat in boats)
+            {
+                <tr>
+                    <td>@boat.BoatName</td>
+                    <td>@boat.ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
+                    <td>@boat.ClosingDate.ToString("HH:mm")</td>
+                    <td>@GetTime(boat)</td>
+                    <td>
+                        <button class="btn btn-primary">Détails</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h4 class="m-3">Ancienne fermeture</h4>
+<div class="container-md shadow m-3">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Date de fermeture</th>
+            <th scope="col">Heure de fermeture</th>
+            <th scope="col">Durée de fermeture</th>
+            <th scope="col">Détail</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var boat in oldBoats)
         {
-        <li class="list-group-item">
-            <p>@boat.BoatName</p>
-            <p>@boat.ClosingDate</p>
-        </li>
+            <tr class="table-secondary">
+                <td>@boat.BoatName</td>
+                <td>@boat.ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
+                <td>@boat.ClosingDate.ToString("HH:mm")</td>
+                <td>@GetTime(boat)</td>
+                <td>
+                    <button class="btn btn-primary">Détails</button>
+                </td>
+            </tr>
         }
-    </ul>
+        </tbody>
+    </table>
 </div>

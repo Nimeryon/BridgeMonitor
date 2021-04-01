@@ -1,18 +1,24 @@
-﻿@model List<BoatModel>
-@{
+﻿@{
     ViewData["Title"] = "Prochaine Fermeture";
 
-    List<BoatModel> boats = Model;
+    List<BoatModel> boats = ViewData["Boats"] as List<BoatModel>;
     boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
 
     BoatModel boat = null;
-    foreach (var boatModel in boats)
+    if (ViewData["Boat"] == null)
     {
-        if (DateTimeOffset.Compare(DateTimeOffset.Now, boatModel.ClosingDate) < 0)
+        foreach (var boatModel in boats)
         {
-            boat = boatModel;
-            break;
+            if (DateTimeOffset.Compare(DateTimeOffset.Now, boatModel.ClosingDate) < 0)
+            {
+                boat = boatModel;
+                break;
+            }
         }
+    }
+    else
+    {
+        boat = ViewData["Boat"] as BoatModel;
     }
 
     string GetTime(DateTime time)
