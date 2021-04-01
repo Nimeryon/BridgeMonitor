@@ -8,6 +8,11 @@ using Microsoft.Extensions.Logging;
 using BridgeMonitor.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
+using Ical.Net;
+using Ical.Net.CalendarComponents;
+using Ical.Net.DataTypes;
+using Ical.Net.Serialization;
+using System.Text;
 
 namespace BridgeMonitor.Controllers
 {
@@ -39,7 +44,7 @@ namespace BridgeMonitor.Controllers
 
         public IActionResult Detail(string boat)
         {
-            String[] infos = boat.Split(".");
+            string[] infos = boat.Split(".");
             List<BoatModel> boats = GetBoats();
             List<BoatModel> oldBoats = new List<BoatModel>();
             for (int i = 0; i < boats.Count; i++)
@@ -67,7 +72,36 @@ namespace BridgeMonitor.Controllers
 
         public IActionResult DownloadCalendar()
         {
-            return Ok();
+            List<BoatModel> boats = GetBoats();
+            for (int i = 0; i < boats.Count; i++)
+            {
+                if (boats[i].ClosingDate.CompareTo(DateTime.Now) < 0)
+                {
+                    boats.RemoveAt(i);
+                }
+            }
+            // Sort
+            boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+
+            // Create calendar
+            var calendar = new Calendar();
+            foreach (BoatModel boat in boats)
+            {
+                var icalEvent = new CalendarEvent
+                {
+                    Name = boat.BoatName,
+                    Description = string.Format("Type {0}", boat.ClosingType),
+                    Start = new CalDateTime(boat.ClosingDate),
+                    End = new CalDateTime(boat.ReopeningDate)
+                };
+
+                calendar.Events.Add(icalEvent);
+            }
+
+            var iCalSerializer = new CalendarSerializer();
+            string result = iCalSerializer.SerializeToString(calendar);
+
+            return File(Encoding.ASCII.GetBytes(result), "calendar/text", "calendar.ics");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
