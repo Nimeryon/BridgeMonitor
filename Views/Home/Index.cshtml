@@ -1,8 +1,81 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Routing.Tree
+@using System.Globalization
+@model List<BoatModel>
+@{
     ViewData["Title"] = "Prochaine Fermeture";
+
+    List<BoatModel> boats = Model;
+    boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+
+    BoatModel boat = null;
+    foreach (var boatModel in boats)
+    {
+        if (DateTimeOffset.Compare(DateTimeOffset.Now, boatModel.ClosingDate) < 0)
+        {
+            boat = boatModel;
+            break;
+        }
+    }
+
+    string GetTime(DateTime time)
+    {
+        TimeSpan timeSpan = time.Subtract(DateTime.Now);
+        return string.Format(
+            "{0} , {1} {2} et {3}", 
+            Pluriel(timeSpan.Days, "jour"),
+            Pluriel(timeSpan.Hours, "heure"),
+            Pluriel(timeSpan.Minutes, "minute"),
+            Pluriel(timeSpan.Seconds, "seconde")
+        );
+    }
+
+    string GetTimeSpan(TimeSpan timeSpan)
+    {
+        return string.Format(
+            "{0} , {1} {2} et {3}", 
+            Pluriel(timeSpan.Days, "jour"),
+            Pluriel(timeSpan.Hours, "heure"),
+            Pluriel(timeSpan.Minutes, "minute"),
+            Pluriel(timeSpan.Seconds, "seconde")
+            );
+    }
+
+    string Pluriel(int amount, string mot)
+    {
+        return string.Format("{0} {1}{2}", amount, mot, amount > 1 ? "s" : "");
+    }
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-md shadow m-3">
+    <div class="card">
+        <div class="card-header">
+            <h3>@boat.BoatName</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-around">
+                <div class="w-25">
+                    <span>Fermeture :</span>
+                    <p>@boat.ClosingDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                </div>
+                <div class="w-75 d-flex justify-content-end align-items-center">
+                    <span>Temps avant fermeture :</span>
+                    <h6 id="CloseCountDown" class="ml-3">@GetTime(boat.ClosingDate)</h6>
+                </div>
+            </div>
+            <div>
+                <span>Temps de fermeture :</span>
+                <p>@GetTimeSpan(boat.ReopeningDate.Subtract(boat.ClosingDate))</p>
+            </div>
+            <div class="d-flex justify-content-around">
+                <div class="w-25">
+                    <span>Réouverture :</span>
+                    <p>@boat.ReopeningDate.ToString("dddd, dd MMMM yyyy HH:mm")</p>
+                </div>
+                <div class="w-75 d-flex justify-content-end  align-items-center">
+                    <span>Temps avant réouverture :</span>
+                    <h6 id="ReOpenCountDown" class="ml-3">@GetTime(boat.ReopeningDate)</h6>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

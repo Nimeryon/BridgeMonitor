@@ -1,7 +1,19 @@
-﻿
+﻿@model List<BoatModel>
 @{
     ViewData["Title"] = "Toutes les Fermetures";
+
+    List<BoatModel> boats = Model;
+    boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
 }
 
-<h1>All</h1>
-
+<div class="container-md shadow m-3">
+    <ul class="list-group">
+        @foreach (var boat in boats)
+        {
+        <li class="list-group-item">
+            <p>@boat.BoatName</p>
+            <p>@boat.ClosingDate</p>
+        </li>
+        }
+    </ul>
+</div>
