@@ -1,25 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Prochaine Fermeture";
 
-    List<BoatModel> boats = ViewData["Boats"] as List<BoatModel>;
-    boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
-
-    BoatModel boat = null;
-    if (ViewData["Boat"] == null)
-    {
-        foreach (var boatModel in boats)
-        {
-            if (DateTimeOffset.Compare(DateTimeOffset.Now, boatModel.ClosingDate) < 0)
-            {
-                boat = boatModel;
-                break;
-            }
-        }
-    }
-    else
-    {
-        boat = ViewData["Boat"] as BoatModel;
-    }
+    BoatModel boat = ViewData["Boat"] as BoatModel;
 
     string GetTime(DateTime time)
     {
@@ -127,13 +109,20 @@
                 </div>
                 <div class="w-75 d-flex justify-content-end align-items-center">
                     <span>Temps avant fermeture :</span>
-                    <h6 id="CloseCountDown" class="ml-3">@GetTime(boat.ClosingDate)</h6>
-                    <script>
-                        setInterval(() => {
-                            var countDown = document.getElementById("CloseCountDown");
-                            countDown.innerText = getTimeCLose();
-                        }, 1000);
-                    </script>
+                    @if (boat.ClosingDate.CompareTo(DateTime.Now) > 0)
+                    {
+                        <h6 id="CloseCountDown" class="ml-3">@GetTime(boat.ClosingDate)</h6>
+                        <script>
+                            setInterval(() => {
+                                var countDown = document.getElementById("CloseCountDown");
+                                countDown.innerText = getTimeCLose();
+                            }, 1000);
+                        </script>
+                    }
+                    else
+                    {
+                        <h6 class="ml-3">Evenement déjà passé.</h6>
+                    }
                 </div>
             </div>
             <div>
@@ -147,13 +136,20 @@
                 </div>
                 <div class="w-75 d-flex justify-content-end  align-items-center">
                     <span>Temps avant réouverture :</span>
-                    <h6 id="ReOpenCountDown" class="ml-3">@GetTime(boat.ReopeningDate)</h6>
-                    <script>
-                        setInterval(() => {
-                            var countDown = document.getElementById("ReOpenCountDown");
-                            countDown.innerText = getTimeReopen();
-                        }, 1000);
-                    </script>
+                    @if (boat.ClosingDate.CompareTo(DateTime.Now) > 0)
+                    {
+                        <h6 id="ReOpenCountDown" class="ml-3">@GetTime(boat.ReopeningDate)</h6>
+                        <script>
+                            setInterval(() => {
+                                var countDown = document.getElementById("ReOpenCountDown");
+                                countDown.innerText = getTimeReopen();
+                            }, 1000);
+                        </script>
+                    }
+                    else
+                    {
+                        <h6 class="ml-3">Evenement déjà passé.</h6>
+                    }
                 </div>
             </div>
         </div>

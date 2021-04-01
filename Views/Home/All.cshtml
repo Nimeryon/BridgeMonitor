@@ -12,16 +12,9 @@
             boats.RemoveAt(i);
         }
     }
-    foreach (BoatModel boat in boats)
-    {
-        
-    }
     // Sort
     boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
     oldBoats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
-
-
-
 
     string GetTime(BoatModel boat)
     {
@@ -54,15 +47,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var boat in boats)
+            @for (int i = 0; i < boats.Count; i++)
             {
                 <tr>
-                    <td>@boat.BoatName</td>
-                    <td>@boat.ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
-                    <td>@boat.ClosingDate.ToString("HH:mm")</td>
-                    <td>@GetTime(boat)</td>
+                    <td>@boats[i].BoatName</td>
+                    <td>@boats[i].ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
+                    <td>@boats[i].ClosingDate.ToString("HH:mm")</td>
+                    <td>@GetTime(boats[i])</td>
                     <td>
-                        <button class="btn btn-primary">Détails</button>
+                        @using (Html.BeginForm("Detail", "Home"))
+                        {
+                            <button class="btn btn-primary" name="boat" value="n.@i" data-toggle="tooltip" data-placement="top" title="Plus de détails.">Détails</button>
+                        }
                     </td>
                 </tr>
             }
@@ -70,6 +66,7 @@
     </table>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <h4 class="m-3">Ancienne fermeture</h4>
 <div class="container-md shadow m-3">
     <table class="table">
@@ -83,18 +80,27 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var boat in oldBoats)
-        {
-            <tr class="table-secondary">
-                <td>@boat.BoatName</td>
-                <td>@boat.ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
-                <td>@boat.ClosingDate.ToString("HH:mm")</td>
-                <td>@GetTime(boat)</td>
-                <td>
-                    <button class="btn btn-primary">Détails</button>
-                </td>
-            </tr>
-        }
+            @for (int i = 0; i < oldBoats.Count; i++)
+            {
+                <tr class="table-secondary">
+                 <td>@oldBoats[i].BoatName</td>
+                 <td>@oldBoats[i].ClosingDate.ToString("dddd, dd MMMM yyyy")</td>
+                 <td>@oldBoats[i].ClosingDate.ToString("HH:mm")</td>
+                 <td>@GetTime(oldBoats[i])</td>
+                 <td>
+                     @using (Html.BeginForm("Detail", "Home"))
+                     {
+                         <button class="btn btn-primary" name="boat" value="o.@i" data-toggle="tooltip" data-placement="top" title="Plus de détails.">Détails</button>
+                     }
+                 </td>
+             </tr>
+            }
         </tbody>
     </table>
 </div>
+
+<script>
+    $(function () {
+        $('button').tooltip();
+    })
+</script>

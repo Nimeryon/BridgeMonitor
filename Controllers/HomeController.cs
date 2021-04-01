@@ -22,17 +22,41 @@ namespace BridgeMonitor.Controllers
 
         public IActionResult Index()
         {
-            ViewData["Boats"] = GetBoats();
-            ViewData["Boat"] = null;
+            List<BoatModel> boats = GetBoats();
+            boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+
+            foreach (var boatModel in boats)
+            {
+                if (DateTimeOffset.Compare(DateTimeOffset.Now, boatModel.ClosingDate) < 0)
+                {
+                    ViewData["Boat"] = boatModel;
+                    break;
+                }
+            }
+
             return View();
         }
 
-        /*public IActionResult Index(BoatModel boat)
+        public IActionResult Detail(string boat)
         {
-            ViewData["Boats"] = GetBoats();
-            ViewData["Boat"] = boat;
-            return View();
-        }*/
+            String[] infos = boat.Split(".");
+            List<BoatModel> boats = GetBoats();
+            List<BoatModel> oldBoats = new List<BoatModel>();
+            for (int i = 0; i < boats.Count; i++)
+            {
+                if (boats[i].ClosingDate.CompareTo(DateTime.Now) < 0)
+                {
+                    oldBoats.Add(boats[i]);
+                    boats.RemoveAt(i);
+                }
+            }
+            // Sort
+            boats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+            oldBoats.Sort((s1, s2) => DateTimeOffset.Compare(s1.ClosingDate, s2.ClosingDate));
+
+            ViewData["Boat"] = infos[0] == "n" ? boats[int.Parse(infos[1])] : oldBoats[int.Parse(infos[1])];
+            return View("Index");
+        }
 
         public IActionResult All()
         {
