@@ -20,19 +20,13 @@
     string GetTime(DateTime time)
     {
         TimeSpan timeSpan = time.Subtract(DateTime.Now);
-        return string.Format(
-            "{0} , {1} {2} et {3}", 
-            Pluriel(timeSpan.Days, "jour"),
-            Pluriel(timeSpan.Hours, "heure"),
-            Pluriel(timeSpan.Minutes, "minute"),
-            Pluriel(timeSpan.Seconds, "seconde")
-        );
+        return GetTimeSpan(timeSpan);
     }
 
     string GetTimeSpan(TimeSpan timeSpan)
     {
         return string.Format(
-            "{0} , {1} {2} et {3}", 
+            "{0} ,{1} {2} et {3}", 
             Pluriel(timeSpan.Days, "jour"),
             Pluriel(timeSpan.Hours, "heure"),
             Pluriel(timeSpan.Minutes, "minute"),
@@ -45,6 +39,60 @@
         return string.Format("{0} {1}{2}", amount, mot, amount > 1 ? "s" : "");
     }
 }
+
+<script>
+    function getTimeCLose() {
+        var date = new Date(toLocalDate("@boat.ClosingDate"));
+        console.log(date);
+        var d = getTime(date - Date.now());
+        return pluriel(d.days, "jour") +
+            " ," +
+            pluriel(d.hours, "heure") +
+            " " +
+            pluriel(d.minutes, "minute") +
+            " et " +
+            pluriel(d.seconds, "seconde");
+    }
+
+    function getTimeReopen() {
+        var date = new Date(toLocalDate("@boat.ReopeningDate"));
+        var d = getTime(date - Date.now());
+        return pluriel(d.days, "jour") +
+            " ," +
+            pluriel(d.hours, "heure") +
+            " " +
+            pluriel(d.minutes, "minute") +
+            " et " +
+            pluriel(d.seconds, "seconde");
+    }
+
+    function getTime(d) {
+        var delta = d / 1000;
+        var days = Math.floor(delta / 86400);
+        delta -= days * 86400;
+        var hours = Math.floor(delta / 3600) % 24;
+        delta -= hours * 3600;
+        var minutes = Math.floor(delta / 60) % 60;
+        delta -= minutes * 60;
+        var seconds = Math.floor(delta);
+
+        return {
+            days: days,
+            hours: hours,
+            minutes: minutes,
+            seconds: seconds
+        };
+    }
+
+    function toLocalDate(date) {
+        var res = date.split("/");
+        return res[1] + "/" + res[0] + "/" + res[2];
+    }
+
+    function pluriel(amount, mot) {
+        return amount + " " + mot + (amount > 1 ? "s" : "");
+    }
+</script>
 
 <div class="container-md shadow m-3">
     <div class="card">
@@ -60,6 +108,12 @@
                 <div class="w-75 d-flex justify-content-end align-items-center">
                     <span>Temps avant fermeture :</span>
                     <h6 id="CloseCountDown" class="ml-3">@GetTime(boat.ClosingDate)</h6>
+                    <script>
+                        setInterval(() => {
+                            var countDown = document.getElementById("CloseCountDown");
+                            countDown.innerText = getTimeCLose();
+                        }, 1000);
+                    </script>
                 </div>
             </div>
             <div>
@@ -74,6 +128,12 @@
                 <div class="w-75 d-flex justify-content-end  align-items-center">
                     <span>Temps avant réouverture :</span>
                     <h6 id="ReOpenCountDown" class="ml-3">@GetTime(boat.ReopeningDate)</h6>
+                    <script>
+                        setInterval(() => {
+                            var countDown = document.getElementById("ReOpenCountDown");
+                            countDown.innerText = getTimeReopen();
+                        }, 1000);
+                    </script>
                 </div>
             </div>
         </div>
